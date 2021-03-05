@@ -73,21 +73,25 @@ public class QueryUtility {
             String title = currentJSONObject.getJSONObject("volumeInfo").getString("title");
             String author;
             try {
-                 author = currentJSONObject.getJSONObject("volumeInfo").getJSONArray("authors").getString(0);
-                Log.d("IN","inside try");
+                author = currentJSONObject.getJSONObject("volumeInfo").getJSONArray("authors").getString(0);
+                Log.d("INSIDE","inside try");
             }
             catch (Exception e){
-                Log.d("IN","inside catch");
+                Log.d("INSIDE","inside catch");
                 e.printStackTrace();
-                    author = "NOT FOUND";
+                author = "NOT FOUND";
 
             }
-//            String author = "currentJSONObject";
-            String saleability = currentJSONObject.getJSONObject("saleInfo").getString("saleability");
+
             String price;
+            String saleability = currentJSONObject.getJSONObject("saleInfo").getString("saleability");
             if (saleability.equals("NOT_FOR_SALE")) {
                 price = "NOT_FOR_SALE";
-            } else {
+            }
+            else if((saleability.equals("FREE"))) {
+                price = "FREE";
+            }
+            else{
                 price = currentJSONObject.getJSONObject("saleInfo").getJSONObject("retailPrice").getString("amount");
                 Locale locale = new Locale("en","IN");
                 DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getCurrencyInstance(locale);
@@ -96,21 +100,17 @@ public class QueryUtility {
                     decimalFormat.setDecimalFormatSymbols(dfs);
                 price = decimalFormat.format(Float.parseFloat(price));
             }
-
-           String imagelink = (currentJSONObject.getJSONObject("volumeInfo").getJSONObject("imageLinks").getString("thumbnail"));
-//           URL imageURL = new URL("http://books.google.com/books/content?id=zYw3sYFtz9kC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api");
-            if (imagelink.charAt(4)!='s'){
-                imagelink = "https://" + imagelink.substring(7);
+            Log.d("INSIDE","sale");
+           String imageLink = (currentJSONObject.getJSONObject("volumeInfo").getJSONObject("imageLinks").getString("thumbnail"));
+            if (imageLink.charAt(4)!='s'){
+                imageLink = "https://" + imageLink.substring(7);
             }
-            URL imageURL = new URL(imagelink);
-            Log.d("URL",imageURL.toString());
+            URL imageURL = new URL(imageLink);
+            Log.d("INSIDE",imageURL.toString());
 
             InputStream imageStream = MakeHTTPRequest(imageURL);
             Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
-//            Bitmap bitmap = BitmapFactory.decodeResource(Resources.getSystem(),R.drawable.ic_launcher_background);
-
-
-            books.add(new Book(title, author, price,bitmap));
+            books.add(new Book(title, author, price, bitmap));
 
         }
         return books;

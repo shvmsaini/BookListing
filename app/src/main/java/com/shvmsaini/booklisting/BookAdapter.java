@@ -32,7 +32,6 @@ public class BookAdapter extends ArrayAdapter<Book> {
         ((TextView)(listView.findViewById(R.id.author))).setText(currentBook.getmAuthor());
         ((TextView)(listView.findViewById(R.id.price))).setText(currentBook.getmPrice());
         ((ImageView)(listView.findViewById(R.id.thumbnail))).setImageBitmap(currentBook.getImageBitmap());
-//        ((ImageView)(listView.findViewById(R.id.thumbnail))).setImageResource(R.drawable.ic_launcher_background);
         return listView;
     }
 
