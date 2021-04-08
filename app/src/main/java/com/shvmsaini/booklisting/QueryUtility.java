@@ -2,7 +2,6 @@ package com.shvmsaini.booklisting;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,7 +31,7 @@ public class QueryUtility {
             url = new URL(sampleURL);
             return url;
         } catch (MalformedURLException e) {
-            Log.d("", e.toString());
+           e.printStackTrace();
         }
         return null;
     }
@@ -49,7 +48,6 @@ public class QueryUtility {
             inputStream = httpsURLConnection.getInputStream();
         }
         return inputStream;
-
     }
 
     public static String ReadFromStream(InputStream inputStream) throws IOException {
@@ -74,15 +72,12 @@ public class QueryUtility {
             String author;
             try {
                 author = currentJSONObject.getJSONObject("volumeInfo").getJSONArray("authors").getString(0);
-                Log.d("INSIDE","inside try");
             }
             catch (Exception e){
-                Log.d("INSIDE","inside catch");
                 e.printStackTrace();
                 author = "NOT FOUND";
 
             }
-
             String price;
             String saleability = currentJSONObject.getJSONObject("saleInfo").getString("saleability");
             if (saleability.equals("NOT_FOR_SALE")) {
@@ -100,14 +95,19 @@ public class QueryUtility {
                     decimalFormat.setDecimalFormatSymbols(dfs);
                 price = decimalFormat.format(Float.parseFloat(price));
             }
-            Log.d("INSIDE","sale");
-           String imageLink = (currentJSONObject.getJSONObject("volumeInfo").getJSONObject("imageLinks").getString("thumbnail"));
+            String imageLink;
+            try {
+               imageLink = (currentJSONObject.getJSONObject("volumeInfo").getJSONObject("imageLinks").getString("thumbnail"));
+           }
+           catch (JSONException jsonException){
+               imageLink = "https://books.google.com/books/content?id=KER0dd2oYP8C&printsec=frontcover&img=1&zoom=5&edge=curl&source=gbs_api";
+
+           }
             if (imageLink.charAt(4)!='s'){
                 imageLink = "https://" + imageLink.substring(7);
+
             }
             URL imageURL = new URL(imageLink);
-            Log.d("INSIDE",imageURL.toString());
-
             InputStream imageStream = MakeHTTPRequest(imageURL);
             Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
             books.add(new Book(title, author, price, bitmap));
