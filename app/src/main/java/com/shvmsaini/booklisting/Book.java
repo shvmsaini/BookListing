@@ -8,8 +8,8 @@ public class Book {
     String mPrice;
     Bitmap imageBitmap;
 
-    public Book(String title,String author,String price,Bitmap imageBitmap){
-        mTitle= title;
+    public Book(String title, String author, String price, Bitmap imageBitmap) {
+        mTitle = title;
         mAuthor = author;
         mPrice = price;
         this.imageBitmap = imageBitmap;
@@ -19,12 +19,15 @@ public class Book {
     public String getmAuthor() {
         return mAuthor;
     }
-    public String getmTitle(){
+
+    public String getmTitle() {
         return mTitle;
     }
+
     public String getmPrice() {
         return mPrice;
     }
+
     public Bitmap getImageBitmap() {
         return imageBitmap;
     }

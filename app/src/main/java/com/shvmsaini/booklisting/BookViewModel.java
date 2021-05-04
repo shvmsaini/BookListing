@@ -17,10 +17,14 @@ public class BookViewModel extends ViewModel {
         sample =url;
         if (books == null) {
             books = new MutableLiveData<>();
+            if (url.equals(BookActivity.SAMPLE_URL)){
+                return books;
+            }
             loadBooks(sample);
         }
         return books;
     }
+
     public void loadBooks(String s) {
         sample =s;
         new Thread(thread).start();
@@ -34,8 +38,8 @@ public class BookViewModel extends ViewModel {
             String JSONResponse = QueryUtility.ReadFromStream(QueryUtility.MakeHTTPRequest(url));
             books.postValue(QueryUtility.extractBooksFromJSON(JSONResponse));
         }
-        catch (IOException | JSONException ioException){
-            ioException.printStackTrace();
+        catch (IOException | JSONException exception){
+            exception.printStackTrace();
         }
     }
     });

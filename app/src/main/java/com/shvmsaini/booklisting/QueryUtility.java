@@ -1,5 +1,6 @@
 package com.shvmsaini.booklisting;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -66,6 +67,7 @@ public class QueryUtility {
         ArrayList<Book> books = new ArrayList<>();
         JSONObject jsonObject = new JSONObject(JSONresponse);
         JSONArray jsonArray = jsonObject.getJSONArray("items");
+
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject currentJSONObject = jsonArray.getJSONObject(i);
             String title = currentJSONObject.getJSONObject("volumeInfo").getString("title");
@@ -100,8 +102,9 @@ public class QueryUtility {
                imageLink = (currentJSONObject.getJSONObject("volumeInfo").getJSONObject("imageLinks").getString("thumbnail"));
            }
            catch (JSONException jsonException){
-               imageLink = "https://books.google.com/books/content?id=KER0dd2oYP8C&printsec=frontcover&img=1&zoom=5&edge=curl&source=gbs_api";
-
+               Bitmap ic = BitmapFactory.decodeResource(Resources.getSystem(),R.drawable.ic_baseline_image_not_supported_24);
+               books.add(new Book(title,author,price,ic));
+                continue;
            }
             if (imageLink.charAt(4)!='s'){
                 imageLink = "https://" + imageLink.substring(7);

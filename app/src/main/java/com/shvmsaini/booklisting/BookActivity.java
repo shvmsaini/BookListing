@@ -5,14 +5,12 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,30 +19,33 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.ArrayList;
 
 public class BookActivity extends AppCompatActivity {
-    public static BookAdapter bookAdapter;
-    ListView bookView;
-    public static String SAMPLE_URL = "https://www.googleapis.com/books/v1/volumes?q=Search+terms";
+    public BookAdapter bookAdapter;
+    public ListView bookView;
+    public static String SAMPLE_URL = "https://www.googleapis.com/books/v1/volumes?q=";
     public ArrayList<Book> books = new ArrayList<>();
     public BookViewModel bookViewModel;
+    public TextView emptyStateView;
+    public SearchView searchQuery;
+    public ConnectivityManager connMgr;
+    public NetworkInfo networkInfo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activitymain);
         bookView = findViewById(R.id.list);
-        TextView emptyStateView = findViewById(R.id.empty_view);
-        EditText searchQuery = findViewById(R.id.search_query);
+        emptyStateView = findViewById(R.id.empty_view);
+        searchQuery = findViewById(R.id.search_query);
         bookView.setEmptyView(emptyStateView);
-        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-
-        bookAdapter = new BookAdapter(BookActivity.this,books);
+        bookAdapter = new BookAdapter(BookActivity.this, books);
         bookViewModel = new ViewModelProvider(this).get(BookViewModel.class);
 
+        // For checking if network is connected
+        connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             bookViewModel.getBooks(SAMPLE_URL).observe(this, books -> {
-                Log.d("INSIDE", "observe");
-                bookAdapter = new BookAdapter(this,books);
+                bookAdapter = new BookAdapter(this, books);
                 bookView.setAdapter(bookAdapter);
             });
 
@@ -52,21 +53,38 @@ public class BookActivity extends AppCompatActivity {
             emptyStateView.setText(R.string.no_internet_connection);
         }
 
-        Button button = findViewById(R.id.search_button);
-        button.setOnClickListener(v -> {
-            String query = searchQuery.getText().toString().trim().replace(" ","+");
-            bookViewModel.loadBooks("https://www.googleapis.com/books/v1/volumes?q=" + query);
-            hideKeyboard(BookActivity.this);
-        });
-        searchQuery.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                button.performClick();
+        searchQuery.setSubmitButtonEnabled(true);
+        searchQuery.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                String temp = searchQuery.getQuery().toString();
+                query = temp.trim().replace(" ", "+");
+                if (temp.length() == 0) {
+                    Toast.makeText(getApplicationContext(), "Search bar is empty!", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                bookViewModel.loadBooks(SAMPLE_URL + query);
+                hideKeyboard(BookActivity.this);
+                searchQuery.clearFocus();
+                emptyStateView.setText(R.string.loading);
+                emptyStateView.setVisibility(View.VISIBLE);
+                return false;
             }
-            return false;
-        });
 
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
 
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Toast.makeText(this, "Destroyed", Toast.LENGTH_SHORT).show();
+    }
+
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         //Find the currently focused view, so we can grab the correct window token from it.
@@ -78,12 +96,3 @@ public class BookActivity extends AppCompatActivity {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }
-
-
-
-
-
-
-
-
-
