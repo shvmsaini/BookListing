@@ -1,30 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp">
-
-        <SearchView
-            android:id="@+id/search_query"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="true"
-            android:iconifiedByDefault="false"
-            android:imeOptions="actionSearch"
-            android:queryHint="@string/search_hint"
-
-            tools:ignore="RtlSymmetry">
-
-        </SearchView>
-    </LinearLayout>
 
     <TextView
         android:id="@+id/empty_view"
@@ -43,6 +24,33 @@
         android:divider="@android:color/darker_gray"
         android:dividerHeight="0.5dp"
         android:orientation="vertical" />
+    <FrameLayout
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center">
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/page_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+
+            android:layout_margin="16dp"
+            app:fabSize="mini"
+            android:src="@android:drawable/ic_media_next"
+            android:contentDescription="TODO">
+        </com.google.android.material.floatingactionbutton.FloatingActionButton>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/page_previous"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_gravity="start"
+            app:fabSize="mini"
+            android:src="@android:drawable/ic_media_previous"
+            android:contentDescription="TODO">
+        </com.google.android.material.floatingactionbutton.FloatingActionButton>
+    </FrameLayout>
 
 
-</LinearLayout>
+
+</FrameLayout>

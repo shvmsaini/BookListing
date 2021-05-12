@@ -13,6 +13,7 @@ import java.util.List;
 public class BookViewModel extends ViewModel {
     public static MutableLiveData<List<Book>> books;
     public String sample ;
+
     public LiveData<List<Book>> getBooks(String url){
         sample =url;
         if (books == null) {
@@ -27,7 +28,8 @@ public class BookViewModel extends ViewModel {
 
     public void loadBooks(String s) {
         sample =s;
-        new Thread(thread).start();
+        Thread t = new Thread(thread);
+        t.start();
     }
     Thread thread = new Thread(new Runnable() {
     @Override
@@ -39,6 +41,7 @@ public class BookViewModel extends ViewModel {
             books.postValue(QueryUtility.extractBooksFromJSON(JSONResponse));
         }
         catch (IOException | JSONException exception){
+
             exception.printStackTrace();
         }
     }

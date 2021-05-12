@@ -3,6 +3,7 @@ package com.shvmsaini.booklisting;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -66,7 +67,13 @@ public class QueryUtility {
     public static List<Book> extractBooksFromJSON(String JSONresponse) throws JSONException, IOException {
         ArrayList<Book> books = new ArrayList<>();
         JSONObject jsonObject = new JSONObject(JSONresponse);
-        JSONArray jsonArray = jsonObject.getJSONArray("items");
+        JSONArray jsonArray;
+        try{
+            jsonArray = jsonObject.getJSONArray("items");
+        }catch (JSONException e){
+            Log.d("INSIDE","IOgfU");
+            return books;
+        }
 
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject currentJSONObject = jsonArray.getJSONObject(i);
