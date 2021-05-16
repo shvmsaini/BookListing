@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Book Listing</string>
-    <string name="thumbnail">Gives thumbnail</string>
+    <string name="thumbnail">Book Thumbnail</string>
     <string name="search_hint">Search…</string>
     <string name="search_button">Search</string>
     <string name="no_internet_connection">No internet connection</string>
@@ -10,6 +10,7 @@
     <string name="no_books_found">No books found. Try searching something else.</string>
     <string name="settings">Search Settings</string>
     <string name="title_activity_settings">Search Settings</string>
+    <string name="book_detail">Book Detail</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
@@ -26,4 +27,12 @@
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="results">Results Per Page</string>
+    <string name="set">Set</string>
+    <string name="cancel">Cancel</string>
+    <string name="go_to_previous_page">Go To Previous Page</string>
+    <string name="go_to_next_page">Go To Next Page</string>
+    <string name="book_description">Book Description</string>
+    <string name="buy_link_here">Buy link here</string>
+    <string name="buy">Buy</string>
+    <string name="not_for_sale">NOT FOR SALE</string>
 </resources>

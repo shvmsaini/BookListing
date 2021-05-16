@@ -104,13 +104,21 @@ public class QueryUtility {
                     decimalFormat.setDecimalFormatSymbols(dfs);
                 price = decimalFormat.format(Float.parseFloat(price));
             }
+//            String selfLink = jsonObject.getString("selfLink");
+            URL selfLink;
+            try {
+                selfLink = new URL(currentJSONObject.getString("selfLink"));
+            }catch (Exception e){
+                selfLink = new URL("https://www.google.com");
+            }
+            Log.d("INSIDE",selfLink.toString());
             String imageLink;
             try {
                imageLink = (currentJSONObject.getJSONObject("volumeInfo").getJSONObject("imageLinks").getString("thumbnail"));
            }
            catch (JSONException jsonException){
                Bitmap ic = BitmapFactory.decodeResource(Resources.getSystem(),R.drawable.ic_baseline_image_not_supported_24);
-               books.add(new Book(title,author,price,ic));
+               books.add(new Book(title,author,price,ic,selfLink));
                 continue;
            }
             if (imageLink.charAt(4)!='s'){
@@ -120,10 +128,52 @@ public class QueryUtility {
             URL imageURL = new URL(imageLink);
             InputStream imageStream = MakeHTTPRequest(imageURL);
             Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
-            books.add(new Book(title, author, price, bitmap));
+            books.add(new Book(title, author, price, bitmap,selfLink));
 
         }
         return books;
+    }
+    public static Book extractBookDetailFromJSON(String JSONresponse) throws JSONException, IOException {
+        Book book;
+        JSONObject jsonObject = new JSONObject(JSONresponse);
+        String subtitle;
+        try {
+            subtitle = jsonObject.getJSONObject("volumeInfo").getString("subtitle");
+        }catch(Exception e){
+            subtitle = "";
+        }
+        String pageCount;
+        try {
+            pageCount = jsonObject.getJSONObject("volumeInfo").getString("pageCount");
+        }catch(Exception e){
+            pageCount = "";
+        }
+        String description;
+        try {
+            description = jsonObject.getJSONObject("volumeInfo").getString("description");
+        }catch(Exception e){
+            description = "";
+        }
+        String publishingDate;
+        try {
+            publishingDate = jsonObject.getJSONObject("volumeInfo").getString("publishedDate");
+        }catch(Exception e){
+            publishingDate = "";
+        }
+        String buyLink;
+        try {
+            buyLink = jsonObject.getJSONObject("saleInfo").getString("buyLink");
+        }catch(Exception e){
+            buyLink = "";
+        }
+        String pdfLink;
+        try {
+            pdfLink = jsonObject.getJSONObject("accessInfo").getJSONObject("pdf").getString("downloadLink");
+        }catch(Exception e){
+            pdfLink = "";
+        }
+        book = new Book(subtitle,description,buyLink,publishingDate,pageCount,pdfLink);
+        return book;
     }
 
 }

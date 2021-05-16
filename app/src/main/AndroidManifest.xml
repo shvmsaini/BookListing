@@ -17,6 +17,10 @@
             android:exported="true"
             android:label="@string/title_activity_settings" />
         <activity
+            android:name=".BookDetailActivity"
+            android:exported="true"
+            android:label="@string/book_detail" />
+        <activity
             android:name=".BookActivity"
             android:exported="true">
             <intent-filter>
@@ -31,11 +35,11 @@
                 android:resource="@xml/searchable" />
         </activity>
 
-
         <provider
             android:name=".MySuggestionProvider"
             android:authorities="com.shvmsaini.MySuggestionProvider"
-            android:enabled="true" />
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>

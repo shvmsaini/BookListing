@@ -15,7 +15,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -30,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class BookActivity extends AppCompatActivity {
-    public BookAdapter bookAdapter;
+    public static BookAdapter bookAdapter;
     public ListView bookView;
     public static String SAMPLE_URL = "https://www.googleapis.com/books/v1/volumes?q=";
     public ArrayList<Book> books = new ArrayList<>();
@@ -40,8 +39,9 @@ public class BookActivity extends AppCompatActivity {
     public NetworkInfo networkInfo;
     public FloatingActionButton nextButton;
     public FloatingActionButton previousButton;
-    public Button settingsButton;
     public int pageNumber = 1;
+    public String url="";
+    public SearchView searchView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,7 +70,12 @@ public class BookActivity extends AppCompatActivity {
             emptyStateView.setText(R.string.no_internet_connection);
 
         }
-
+        bookView.setOnItemClickListener((parent, view, position, id) -> {
+            Intent intent= new Intent(BookActivity.this,BookDetailActivity.class);
+            intent.putExtra("int", position);
+            intent.putExtra("string",searchView.getQuery().toString());
+            BookActivity.this.startActivity(intent);
+        });
     }
 
     @Override
@@ -97,7 +102,7 @@ public class BookActivity extends AppCompatActivity {
         });
         // Associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         searchView.setIconifiedByDefault(false);
