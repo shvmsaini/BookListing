@@ -39,7 +39,7 @@
             android:name=".MySuggestionProvider"
             android:authorities="com.shvmsaini.MySuggestionProvider"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"/>
     </application>
 
 </manifest>

@@ -136,12 +136,6 @@ public class QueryUtility {
     public static Book extractBookDetailFromJSON(String JSONresponse) throws JSONException, IOException {
         Book book;
         JSONObject jsonObject = new JSONObject(JSONresponse);
-        String subtitle;
-        try {
-            subtitle = jsonObject.getJSONObject("volumeInfo").getString("subtitle");
-        }catch(Exception e){
-            subtitle = "";
-        }
         String pageCount;
         try {
             pageCount = jsonObject.getJSONObject("volumeInfo").getString("pageCount");
@@ -172,7 +166,7 @@ public class QueryUtility {
         }catch(Exception e){
             pdfLink = "";
         }
-        book = new Book(subtitle,description,buyLink,publishingDate,pageCount,pdfLink);
+        book = new Book(description,buyLink,publishingDate,pageCount,pdfLink);
         return book;
     }
 

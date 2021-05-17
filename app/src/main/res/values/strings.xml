@@ -35,4 +35,9 @@
     <string name="buy_link_here">Buy link here</string>
     <string name="buy">Buy</string>
     <string name="not_for_sale">NOT FOR SALE</string>
+    <string name="not_available">Not Available</string>
+    <string name="no_description">No description Available</string>
+    <string name="published_in">Published in</string>
+    <string name="page_count">Page count:</string>
+
 </resources>

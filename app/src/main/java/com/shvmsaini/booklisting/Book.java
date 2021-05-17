@@ -12,7 +12,6 @@ public class Book {
     URL mSelfLink;
 
     /* For Book Details */
-    String subTitle;
     String Description;
     String buyLink;
     String publishingDate;
@@ -27,8 +26,7 @@ public class Book {
         mSelfLink = selfLink;
     }
 
-    public Book(String subTitle, String description, String buyLink, String publishingDate, String pageCount, String pdfLink) {
-        this.subTitle = subTitle;
+    public Book(String description, String buyLink, String publishingDate, String pageCount, String pdfLink) {
         Description = description;
         this.buyLink = buyLink;
         this.publishingDate = publishingDate;
@@ -54,10 +52,6 @@ public class Book {
 
     public URL getmSelfLink() {
         return mSelfLink;
-    }
-
-    public String getmSubTitle() {
-        return subTitle;
     }
 
     public String getmDescription() {
