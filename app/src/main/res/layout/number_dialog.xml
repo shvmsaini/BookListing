@@ -1,23 +1,25 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="350dp"
-    android:layout_height="270dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:id="@+id/dialog">
 
     <NumberPicker
         android:id="@+id/numberPicker"
         android:layout_width="wrap_content"
-        android:solidColor="@color/purple_500"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_margin="16dp" />
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp" />
 
     <Button
         android:id="@+id/cancelButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/numberPicker"
-        android:layout_marginStart="32dp"
+        android:layout_marginEnd="-32dp"
         android:layout_toStartOf="@+id/numberPicker"
         android:text="@string/cancel" />
 

@@ -9,7 +9,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.SearchRecentSuggestions;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -40,20 +39,22 @@ public class BookActivity extends AppCompatActivity {
     public FloatingActionButton nextButton;
     public FloatingActionButton previousButton;
     public int pageNumber = 1;
-    public String url="";
     public SearchView searchView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activitymain);
-
+        //setting up views
+        nextButton = findViewById(R.id.page_next);
+        previousButton = findViewById(R.id.page_previous);
         bookView = findViewById(R.id.list);
         emptyStateView = findViewById(R.id.empty_view);
         bookView.setEmptyView(emptyStateView);
+
         bookAdapter = new BookAdapter(BookActivity.this, books);
         bookViewModel = new ViewModelProvider(this).get(BookViewModel.class);
-
+        toggleButtonVisibility(false);
         // For checking if network is connected
         connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         networkInfo = connMgr.getActiveNetworkInfo();
@@ -61,15 +62,19 @@ public class BookActivity extends AppCompatActivity {
             bookViewModel.getBooks(SAMPLE_URL).observe(this, books -> {
                 if (books.size() == 0) {
                     emptyStateView.setText(R.string.no_books_found);
+                    toggleButtonVisibility(false);
+                }else{
+                    bookAdapter = new BookAdapter(this, books);
+                    bookView.setAdapter(bookAdapter);
+                    toggleButtonVisibility(true);
                 }
-                bookAdapter = new BookAdapter(this, books);
-                bookView.setAdapter(bookAdapter);
+
             });
 
         } else {
             emptyStateView.setText(R.string.no_internet_connection);
-
         }
+
         bookView.setOnItemClickListener((parent, view, position, id) -> {
             Intent intent= new Intent(BookActivity.this,BookDetailActivity.class);
             intent.putExtra("int", position);
@@ -80,11 +85,9 @@ public class BookActivity extends AppCompatActivity {
 
     @Override
     public void startActivity(Intent intent) {
-        Log.d("INSIDE", "startActivity");
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             return;
         }
-
         super.startActivity(intent);
     }
 
@@ -112,7 +115,7 @@ public class BookActivity extends AppCompatActivity {
 
         clearHistoryItem.setOnMenuItemClickListener(item -> {
             suggestions.clearHistory();
-            return false;
+            return true;
         });
 
         searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
@@ -126,6 +129,7 @@ public class BookActivity extends AppCompatActivity {
                 Cursor cursor = (Cursor) searchView.getSuggestionsAdapter().getItem(position);
                 String suggestion = cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1));
                 searchView.setQuery(suggestion, true);
+                toggleButtonVisibility(false);
                 return false;
             }
         });
@@ -152,25 +156,15 @@ public class BookActivity extends AppCompatActivity {
                 return false;
             }
         });
-        nextButton = findViewById(R.id.page_next);
-        previousButton = findViewById(R.id.page_previous);
+
         nextButton.setOnClickListener(v -> {
             pageNumber++;
-            bookViewModel.loadBooks(SAMPLE_URL + searchView.getQuery().toString() + ",page=" + pageNumber);
-            emptyStateView.setText(R.string.loading);
-            emptyStateView.setVisibility(View.VISIBLE);
-            bookView.setVisibility(View.GONE);
-            Log.d("INSIDE", searchView.getQuery().toString() + ",page=" + pageNumber);
-
+            pageChange(pageNumber);
         });
         previousButton.setOnClickListener(v -> {
             if(pageNumber>1){
                 pageNumber--;
-                bookViewModel.loadBooks(SAMPLE_URL + searchView.getQuery().toString() + ",page=" + pageNumber);
-                emptyStateView.setText(R.string.loading);
-                emptyStateView.setVisibility(View.VISIBLE);
-                bookView.setVisibility(View.GONE);
-                Log.d("INSIDE", searchView.getQuery().toString() + ",page=" + pageNumber);
+                pageChange(pageNumber);
             }
 
         });
@@ -187,4 +181,22 @@ public class BookActivity extends AppCompatActivity {
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
+    public void toggleButtonVisibility(boolean state){
+        if(state){
+            nextButton.setVisibility(View.VISIBLE);
+            previousButton.setVisibility(View.VISIBLE);
+        }else{
+            nextButton.setVisibility(View.GONE);
+            previousButton.setVisibility(View.GONE);
+        }
+
+    }
+    public void pageChange(int pageNumber){
+        bookViewModel.loadBooks(SAMPLE_URL + searchView.getQuery().toString() + ",page=" + pageNumber);
+        emptyStateView.setText(R.string.loading);
+        emptyStateView.setVisibility(View.VISIBLE);
+        bookView.setVisibility(View.GONE);
+        toggleButtonVisibility(false);
+    }
+
 }

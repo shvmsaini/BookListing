@@ -31,7 +31,10 @@ public class BookAdapter extends ArrayAdapter<Book> {
         ((TextView)(listView.findViewById(R.id.title))).setText(currentBook.getmTitle());
         ((TextView)(listView.findViewById(R.id.author))).setText(currentBook.getmAuthor());
         ((TextView)(listView.findViewById(R.id.price))).setText(currentBook.getmPrice());
-        ((ImageView)(listView.findViewById(R.id.thumbnail))).setImageBitmap(currentBook.getImageBitmap());
+        if(currentBook.getImageBitmap()!=null){
+            ((ImageView)(listView.findViewById(R.id.thumbnail))).setImageBitmap(currentBook.getImageBitmap());
+        }
+
         return listView;
     }
 

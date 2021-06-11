@@ -1,6 +1,7 @@
 package com.shvmsaini.booklisting;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 
 import java.net.URL;
 
@@ -10,6 +11,7 @@ public class Book {
     String mPrice;
     Bitmap imageBitmap;
     URL mSelfLink;
+    Drawable mimageDrawable;
 
     /* For Book Details */
     String Description;
@@ -23,6 +25,13 @@ public class Book {
         mAuthor = author;
         mPrice = price;
         this.imageBitmap = imageBitmap;
+        mSelfLink = selfLink;
+    }
+    public Book(String title, String author, String price, Drawable imageDrawable, URL selfLink) {
+        mTitle = title;
+        mAuthor = author;
+        mPrice = price;
+        mimageDrawable = imageDrawable;
         mSelfLink = selfLink;
     }
 
@@ -72,5 +81,9 @@ public class Book {
 
     public String getmPdfLink() {
         return pdfLink;
+    }
+
+    public Drawable getMimageDrawable() {
+        return mimageDrawable;
     }
 }

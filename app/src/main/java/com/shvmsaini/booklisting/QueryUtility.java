@@ -1,9 +1,10 @@
 package com.shvmsaini.booklisting;
 
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
+import android.graphics.drawable.Drawable;
+
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -71,7 +72,7 @@ public class QueryUtility {
         try{
             jsonArray = jsonObject.getJSONArray("items");
         }catch (JSONException e){
-            Log.d("INSIDE","IOgfU");
+            e.printStackTrace();
             return books;
         }
 
@@ -90,36 +91,29 @@ public class QueryUtility {
             String price;
             String saleability = currentJSONObject.getJSONObject("saleInfo").getString("saleability");
             if (saleability.equals("NOT_FOR_SALE")) {
-                price = "NOT_FOR_SALE";
+                price = "NOT FOR SALE";
             }
             else if((saleability.equals("FREE"))) {
                 price = "FREE";
             }
             else{
                 price = currentJSONObject.getJSONObject("saleInfo").getJSONObject("retailPrice").getString("amount");
-                Locale locale = new Locale("en","IN");
-                DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getCurrencyInstance(locale);
-                DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance(locale);
-                dfs.setCurrencySymbol("\u20B9");
-                    decimalFormat.setDecimalFormatSymbols(dfs);
-                price = decimalFormat.format(Float.parseFloat(price));
+                price = priceFormatter(price);
             }
-//            String selfLink = jsonObject.getString("selfLink");
             URL selfLink;
             try {
                 selfLink = new URL(currentJSONObject.getString("selfLink"));
             }catch (Exception e){
-                selfLink = new URL("https://www.google.com");
+                selfLink = new URL("https://www.google.com/404");
             }
-            Log.d("INSIDE",selfLink.toString());
             String imageLink;
             try {
                imageLink = (currentJSONObject.getJSONObject("volumeInfo").getJSONObject("imageLinks").getString("thumbnail"));
            }
            catch (JSONException jsonException){
-               Bitmap ic = BitmapFactory.decodeResource(Resources.getSystem(),R.drawable.ic_baseline_image_not_supported_24);
-               books.add(new Book(title,author,price,ic,selfLink));
-                continue;
+               Drawable drawable = AppCompatResources.getDrawable(BookActivity.bookAdapter.getContext(), R.drawable.ic_baseline_image_not_supported_24);
+               books.add(new Book(title,author,price,drawable,selfLink));
+               continue;
            }
             if (imageLink.charAt(4)!='s'){
                 imageLink = "https://" + imageLink.substring(7);
@@ -136,21 +130,22 @@ public class QueryUtility {
     public static Book extractBookDetailFromJSON(String JSONresponse) throws JSONException, IOException {
         Book book;
         JSONObject jsonObject = new JSONObject(JSONresponse);
+        JSONObject volumeInfo = jsonObject.getJSONObject("volumeInfo");
         String pageCount;
         try {
-            pageCount = jsonObject.getJSONObject("volumeInfo").getString("pageCount");
+            pageCount = volumeInfo.getString("pageCount");
         }catch(Exception e){
             pageCount = "";
         }
         String description;
         try {
-            description = jsonObject.getJSONObject("volumeInfo").getString("description");
+            description = volumeInfo.getString("description");
         }catch(Exception e){
             description = "";
         }
         String publishingDate;
         try {
-            publishingDate = jsonObject.getJSONObject("volumeInfo").getString("publishedDate");
+            publishingDate = volumeInfo.getString("publishedDate");
         }catch(Exception e){
             publishingDate = "";
         }
@@ -170,4 +165,13 @@ public class QueryUtility {
         return book;
     }
 
+    public static String priceFormatter(String price){
+        Locale locale = new Locale("en","IN");
+        DecimalFormat decimalFormat = (DecimalFormat) DecimalFormat.getCurrencyInstance(locale);
+        DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance(locale);
+        dfs.setCurrencySymbol("\u20B9");
+        decimalFormat.setDecimalFormatSymbols(dfs);
+        price = decimalFormat.format(Float.parseFloat(price));
+        return price;
+    }
 }

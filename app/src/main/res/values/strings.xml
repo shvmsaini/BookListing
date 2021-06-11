@@ -11,6 +11,7 @@
     <string name="settings">Search Settings</string>
     <string name="title_activity_settings">Search Settings</string>
     <string name="book_detail">Book Detail</string>
+    <string name="SAMPLE">https://www.googleapis.com/books/v1/volumes?q=</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
