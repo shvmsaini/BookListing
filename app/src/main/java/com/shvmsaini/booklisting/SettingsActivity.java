@@ -18,7 +18,6 @@ public class SettingsActivity extends AppCompatActivity {
     public TextView resultsPerPage;
     public SharedPreferences sharedPreferences;
     public SharedPreferences.Editor editor;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +29,7 @@ public class SettingsActivity extends AppCompatActivity {
         sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
         resultsPerPage.setOnClickListener(v -> show());
         String KEY = "searchPerPage";
-        int results = sharedPreferences.getInt(KEY,12);
+        int results = sharedPreferences.getInt(KEY,10);
         resultsPerPage.setText(String.valueOf(results));
 
 
