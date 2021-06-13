@@ -55,10 +55,8 @@ public class BookActivity extends AppCompatActivity {
         bookAdapter = new BookAdapter(BookActivity.this, books);
         bookViewModel = new ViewModelProvider(this).get(BookViewModel.class);
         toggleButtonVisibility(false);
-        // For checking if network is connected
-        connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
+
+        if (networkChecker()) {
             bookViewModel.getBooks(SAMPLE_URL).observe(this, books -> {
                 if (books.size() == 0) {
                     emptyStateView.setText(R.string.no_books_found);
@@ -105,7 +103,7 @@ public class BookActivity extends AppCompatActivity {
         });
         // Associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView = (SearchView) searchItem.getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         searchView.setIconifiedByDefault(false);
@@ -126,29 +124,44 @@ public class BookActivity extends AppCompatActivity {
 
             @Override
             public boolean onSuggestionClick(int position) {
-                Cursor cursor = (Cursor) searchView.getSuggestionsAdapter().getItem(position);
-                String suggestion = cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1));
-                searchView.setQuery(suggestion, true);
-                toggleButtonVisibility(false);
-                return false;
+                if(networkChecker()){
+                    Cursor cursor = (Cursor) searchView.getSuggestionsAdapter().getItem(position);
+                    String suggestion = cursor.getString(cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1));
+                    searchView.setQuery(suggestion, true);
+                    toggleButtonVisibility(false);
+                    return true;
+                }
+                else{
+                    bookAdapter.clear();
+                    emptyStateView.setText(R.string.no_internet_connection);
+                    return false;
+                }
+
             }
         });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                pageNumber = 1;
-                String temp = searchView.getQuery().toString().trim();
-                Objects.requireNonNull(getSupportActionBar()).setTitle("Find: " + temp);
-                suggestions.saveRecentQuery(temp, null);
-                query = temp.replace(" ", "+");
-                bookViewModel.loadBooks(SAMPLE_URL + query);
-                hideKeyboard(BookActivity.this);
-                searchView.clearFocus();
-                emptyStateView.setText(R.string.loading);
-                emptyStateView.setVisibility(View.VISIBLE);
-                bookView.setVisibility(View.GONE);
-                searchItem.collapseActionView();
-                return false;
+                if(networkChecker()){
+                    pageNumber = 1;
+                    String temp = searchView.getQuery().toString().trim();
+                    Objects.requireNonNull(getSupportActionBar()).setTitle("Find: " + temp);
+                    suggestions.saveRecentQuery(temp, null);
+                    query = temp.replace(" ", "+");
+                    bookViewModel.loadBooks(SAMPLE_URL + query);
+                    hideKeyboard(BookActivity.this);
+                    searchView.clearFocus();
+                    emptyStateView.setText(R.string.loading);
+                    emptyStateView.setVisibility(View.VISIBLE);
+                    bookView.setVisibility(View.GONE);
+                    searchItem.collapseActionView();
+                    return true;
+                }
+                else{
+                    bookAdapter.clear();
+                    emptyStateView.setText(R.string.no_internet_connection);
+                    return false;
+                }
             }
 
             @Override
@@ -157,16 +170,9 @@ public class BookActivity extends AppCompatActivity {
             }
         });
 
-        nextButton.setOnClickListener(v -> {
-            pageNumber++;
-            pageChange(pageNumber);
-        });
+        nextButton.setOnClickListener(v -> pageChange(pageNumber++));
         previousButton.setOnClickListener(v -> {
-            if(pageNumber>1){
-                pageNumber--;
-                pageChange(pageNumber);
-            }
-
+            if(pageNumber>1) pageChange(pageNumber--);
         });
         return true;
     }
@@ -181,6 +187,7 @@ public class BookActivity extends AppCompatActivity {
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
+
     public void toggleButtonVisibility(boolean state){
         if(state){
             nextButton.setVisibility(View.VISIBLE);
@@ -191,6 +198,7 @@ public class BookActivity extends AppCompatActivity {
         }
 
     }
+
     public void pageChange(int pageNumber){
         bookViewModel.loadBooks(SAMPLE_URL + searchView.getQuery().toString() + ",page=" + pageNumber);
         emptyStateView.setText(R.string.loading);
@@ -199,4 +207,10 @@ public class BookActivity extends AppCompatActivity {
         toggleButtonVisibility(false);
     }
 
+    public boolean networkChecker(){
+        // For checking if network is connected
+        connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        networkInfo = connMgr.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
+    }
 }
