@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -39,7 +41,9 @@ public class BookActivity extends AppCompatActivity {
     public FloatingActionButton nextButton;
     public FloatingActionButton previousButton;
     public int pageNumber = 1;
+    public static int maxResults = 10;
     public SearchView searchView;
+    public SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,6 +59,9 @@ public class BookActivity extends AppCompatActivity {
         bookAdapter = new BookAdapter(BookActivity.this, books);
         bookViewModel = new ViewModelProvider(this).get(BookViewModel.class);
         toggleButtonVisibility(false);
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        maxResults = sharedPreferences.getInt(SettingsActivity.KEY,maxResults);
 
         if (networkChecker()) {
             bookViewModel.getBooks(SAMPLE_URL).observe(this, books -> {
@@ -115,7 +122,6 @@ public class BookActivity extends AppCompatActivity {
             suggestions.clearHistory();
             return true;
         });
-
         searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
             @Override
             public boolean onSuggestionSelect(int position) {
@@ -148,7 +154,8 @@ public class BookActivity extends AppCompatActivity {
                     Objects.requireNonNull(getSupportActionBar()).setTitle("Find: " + temp);
                     suggestions.saveRecentQuery(temp, null);
                     query = temp.replace(" ", "+");
-                    bookViewModel.loadBooks(SAMPLE_URL + query);
+                    bookViewModel.loadBooks(SAMPLE_URL + query + "&maxResults=" + sharedPreferences.getInt(SettingsActivity.KEY,10));
+
                     hideKeyboard(BookActivity.this);
                     searchView.clearFocus();
                     emptyStateView.setText(R.string.loading);
@@ -200,7 +207,9 @@ public class BookActivity extends AppCompatActivity {
     }
 
     public void pageChange(int pageNumber){
-        bookViewModel.loadBooks(SAMPLE_URL + searchView.getQuery().toString() + ",page=" + pageNumber);
+        bookViewModel.loadBooks(SAMPLE_URL + searchView.getQuery().toString() +
+                "&maxResults=" +sharedPreferences.getInt(SettingsActivity.KEY,10)+
+                "&startIndex=" + (pageNumber-1)*sharedPreferences.getInt(SettingsActivity.KEY,10));
         emptyStateView.setText(R.string.loading);
         emptyStateView.setVisibility(View.VISIBLE);
         bookView.setVisibility(View.GONE);

@@ -12,7 +12,7 @@ import java.util.List;
 
 public class BookViewModel extends ViewModel {
     public static MutableLiveData<List<Book>> books;
-    public String sample ;
+    public String sample;
 
     public LiveData<List<Book>> getBooks(String url){
         sample =url;

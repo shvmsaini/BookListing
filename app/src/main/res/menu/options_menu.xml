@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/search"
         android:title="@string/search_button"
-        android:icon="@android:drawable/ic_menu_search"
+        android:icon="@drawable/ic_baseline_search_24"
         app:showAsAction="always|collapseActionView"
         app:actionViewClass="android.widget.SearchView"
         />
