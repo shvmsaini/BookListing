@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -73,7 +74,6 @@ public class BookActivity extends AppCompatActivity {
                     bookView.setAdapter(bookAdapter);
                     toggleButtonVisibility(true);
                 }
-
             });
 
         } else {
@@ -84,6 +84,7 @@ public class BookActivity extends AppCompatActivity {
             Intent intent= new Intent(BookActivity.this,BookDetailActivity.class);
             intent.putExtra("int", position);
             intent.putExtra("string",searchView.getQuery().toString());
+
             BookActivity.this.startActivity(intent);
         });
     }
@@ -120,6 +121,7 @@ public class BookActivity extends AppCompatActivity {
 
         clearHistoryItem.setOnMenuItemClickListener(item -> {
             suggestions.clearHistory();
+            Toast.makeText(this,"Search history cleared",Toast.LENGTH_SHORT).show();
             return true;
         });
         searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
@@ -145,6 +147,7 @@ public class BookActivity extends AppCompatActivity {
 
             }
         });
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
